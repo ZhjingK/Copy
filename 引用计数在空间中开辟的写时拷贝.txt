@@ -1,0 +1,56 @@
+//将引用计数放在开辟空间的前面
+class string
+{
+public:
+	string(const char* str)
+		:_str(new char(strlen(str) + 4 + 1))
+	{
+		*(int*)(_str) = 1;
+		_str += 4;
+		strcpy(_str, str);
+	}
+	string(const string& str)
+	{
+		//此时的_str指向开始位置+4
+		_str = str._str;
+		++*(int*)(_str - 4);
+	}
+	string& operator=(const string& str)
+	{
+		if (_str != str._str)
+		{
+			if (*(int*)(_str - 4) == 0)
+			{
+				delete[](_str - 4);
+			}
+			_str = str._str;
+			++*(int*)(_str - 4);
+		}
+		return *this;
+	}
+	~string()
+	{
+		if (--*(int*)(_str - 4) != 0)
+		{
+			delete[](_str - 4);
+		}
+	}
+	void CopyRight()
+	{
+		if (*(int*)_str - 4 > 1)
+		{
+			char* tmp = new char(strlen(_str) + 4 + 1);
+			tmp += 4;
+			strcpy(tmp, _str);
+			_str = tmp;
+			++*(int*)(_str - 4);
+		}
+	}
+	char& operator[](size_t pos)
+	{
+		CopyRight();
+		return _str[pos];
+	}
+private:
+	char* _str;
+};

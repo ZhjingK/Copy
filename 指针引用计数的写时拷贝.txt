@@ -1,0 +1,60 @@
+//指针引用计数的写时拷贝
+class string
+{
+public:
+	string(const char* str)
+		:_str(new char(strlen(str) + 1))
+		, _refcount(new int(1))
+	{
+		strcpy(_str, str);
+	}
+	string(const string& str)
+	{
+		_str = str._str;
+		_refcount = str._refcount;
+		(*_refcount)++;
+	}
+	string& operator=(const string& str)
+	{
+		if (_str != str._str)
+		{
+			if (--*(_refcount) == 0)//要让_str指向str需要将_str引用计数值减一
+			{
+				delete[]_str;
+				delete _refcount;
+			}
+			_str = str._str;
+			_refcount = str._refcount;
+			++(*_refcount);
+		}
+		return *this;
+	}
+	~string()
+	{
+		if (--(*_refcount) != 0)
+		{
+			delete[]_str;
+			delete _refcount;
+		}
+	}
+	void CopyRight()
+	{
+		if (*(_refcount) > 1)
+		{
+			char* tmp = new char(strlen(_str) + 1);
+			strcpy(tmp, _str);
+			_str = tmp;
+			--*(_refcount);//_str指向临时空间tmp，所以原来_str的那块空间的引用计数减一
+
+			_refcount = new int(1);//将tmp的引用计数置1
+		}
+	}
+	char& operator[](size_t pos)
+	{
+		CopyRight();
+		return _str[pos];
+	}
+private:
+	char* _str;
+	int* _refcount;
+};

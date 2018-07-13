@@ -1,0 +1,36 @@
+//引用计数的浅拷贝
+class string
+{
+public:
+	string(const char* str)
+		:_str(new char(strlen(str)+1))
+	{
+		strcpy(_str, str);
+	}
+	string(const string& str)
+	{
+		_str = str._str;
+		_refcount++;
+	}
+	string& operator=(const string& str)
+	{
+		if (_str!=str._str)
+		{
+			_str = str._str;
+			_refcount = str._refcount;
+			_refcount++;
+		}
+		return *this;
+	}
+	~string()
+	{
+		if (--_refcount == 0)
+		{
+			delete[] _str;
+		}
+	}
+private:
+	char* _str;
+	static int _refcount;
+};
+int string::_refcount = 1;

@@ -1,0 +1,34 @@
+//´«Í³Éî¿½±´
+class string
+{
+public:
+	string(const char* str)
+		:_str(new char (strlen(str)+1))
+	{
+		strcpy(_str, str);
+	}
+	string(const string& str)
+		:_str(new char(strlen(str._str) + 1))
+	{
+		strcpy(_str, str._str);
+	}
+	string& operator=(const string& str)
+	{
+		if (this != &str)
+		{
+			delete[] _str;
+			_str = new char(strlen(str._str) + 1);
+			strcpy(_str, str._str);
+		}
+		return *this;
+	}
+	~string()
+	{
+		if (_str)
+		{
+			delete[] _str;
+		}
+	}
+private:
+	char* _str;
+};

@@ -1,0 +1,23 @@
+//ÏÖ´úÉî¿½±´
+class string
+{
+public:
+	string(const char* str)
+		:_str(new char(strlen(str) + 1))
+	{
+		strcpy(_str, str);
+	}
+	string(const string& str)
+		:_str(NULL)
+	{
+		string tmp(str._str);
+		swap(_str, tmp._str);
+	}
+	string& operator=(string& str)
+	{
+		swap(_str, str._str);
+		return *this;
+	}
+private:
+	char* _str;
+};
